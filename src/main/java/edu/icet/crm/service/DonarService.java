@@ -10,4 +10,11 @@ public interface DonarService {
 
     List<Donar> getAllDonar();
 
+    boolean deleteDonarById(String donarId);
+
+    Donar findDonarById(String donarId);
+
+    boolean updateDonar(Donar donar);
+
+    Donar getDonarByEmail(String email);
 }

@@ -1,9 +1,12 @@
 package edu.icet.crm.controller;
 
 import edu.icet.crm.dto.LoginRequest;
+import edu.icet.crm.dto.LoginResponse;
 import edu.icet.crm.service.AuthenticationService;
 import edu.icet.crm.service.DonarService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,14 +17,13 @@ public class LoginController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest loginRequest){
-       String role = authenticationService.login(loginRequest);
-       if(role.equals("ADMIN")){
-           return "Admin Login Successful";
-       }else if(role.equals("DONAR")){
-           return "Donar Login Successful";
-       }else{
-           return "Login Failed";
-       }
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
+       LoginResponse role = authenticationService.login(loginRequest);
+        return switch (role.getType()) {
+            case "ADMIN" -> ResponseEntity.ok(role);
+            case "DONAR" -> ResponseEntity.ok(role);
+            case "HOSPITAL" -> ResponseEntity.ok(role);
+            default -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        };
     }
 }

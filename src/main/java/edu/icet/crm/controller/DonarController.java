@@ -18,12 +18,13 @@ public class DonarController {
 
     @PostMapping("/add")
     public ResponseEntity<String> addDonar(@RequestBody Donar donar){
+        System.out.println(donar);
         if(donar == null){
             return ResponseEntity.badRequest().body("Invalid donor data");
         }
         return donarService
                 .addDonar(donar)?ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(HttpStatus.OK)
                 .body("Donor Added"):ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Failed to add donor");
@@ -35,5 +36,38 @@ public class DonarController {
         return donarService.getAllDonar();
     }
 
+    @GetMapping("/findBy/{email}")
+    public boolean getDonarByEmail(@PathVariable String email){
+        if(donarService.getDonarByEmail(email)!=null){
+            return true;
+        }
+        return false;
+    }
+
+
+
+    @GetMapping("/findById/{donarId}")
+    public Donar getDonarById(@PathVariable String donarId){
+        return donarService.findDonarById(donarId);
+    }
+
+
+    @DeleteMapping("/delete/{donarId}")
+    public ResponseEntity<String> deleteDonar(@PathVariable String donarId){
+        return donarService.deleteDonarById(donarId)?ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Donor Deleted"):ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to delete donor");
+    }
+
+    @PatchMapping("/update")
+    public ResponseEntity<String> updateDonar(@RequestBody Donar donar){
+        return donarService.updateDonar(donar)?ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Donor Updated"):ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to update donor");
+    }
 
 }

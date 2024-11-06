@@ -32,4 +32,8 @@ public class DonarEntity {
     private String gender;
     private String age;
 
+    public static String generateDonorID(int sequenceNumber) {
+        return String.format("DON-%03d", sequenceNumber);
+    }
+
 }
