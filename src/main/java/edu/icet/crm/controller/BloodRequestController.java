@@ -36,4 +36,20 @@ public class BloodRequestController {
     public List<BloodRequest> getPendingList(){
         return bloodRequestService.getPendingList();
     }
+
+    @GetMapping("/completed")
+    public List<BloodRequest> getApprovedList(){
+        return bloodRequestService.getCompletedList();
+    }
+
+    @PatchMapping("/update/{requestID}/{status}")
+    public ResponseEntity<String> updateRequestStatus(
+            @PathVariable String requestID,
+            @PathVariable String status){
+        return bloodRequestService.updateRequestStatus(requestID,status)?ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Request Updated"):ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to update Request");
+    }
 }

@@ -104,4 +104,15 @@ public class AppointmentServiceImpl implements AppointmentService {
         });
         return appointments;
     }
+
+    @Override
+    public List<Appointment> getcanceledList() {
+        List<AppointmentEntity> appointmentEntities = appointmentRepository.findByStatus("CANCELED");
+        List<Appointment> appointments = new ArrayList<>();
+        appointmentEntities.forEach(obj->{
+            appointments.add(new ModelMapper().map(obj,Appointment.class));
+        });
+        System.out.println(appointments);
+        return appointments;
+    }
 }

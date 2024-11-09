@@ -45,6 +45,11 @@ public class AppointmentController {
         return appointmentService.getPendingList();
     }
 
+    @GetMapping("/canceled")
+    public List<Appointment> getcanceledList(){
+        return appointmentService.getcanceledList();
+    }
+
     @GetMapping("/approved")
     public List<Appointment> getApprovedList(){
         return appointmentService.getApprovedList();

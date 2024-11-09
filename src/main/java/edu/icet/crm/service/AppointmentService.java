@@ -23,4 +23,6 @@ public interface AppointmentService {
 
     List<Appointment> getApprovedList();
 
+    List<Appointment> getcanceledList();
+
 }

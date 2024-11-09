@@ -2,10 +2,8 @@ package edu.icet.crm.service.impl;
 
 import edu.icet.crm.dto.Appointment;
 import edu.icet.crm.dto.BloodRequest;
-import edu.icet.crm.entity.AppointmentEntity;
-import edu.icet.crm.entity.BloodRequestEntity;
-import edu.icet.crm.entity.DonarEntity;
-import edu.icet.crm.entity.HospitalEntity;
+import edu.icet.crm.entity.*;
+import edu.icet.crm.repository.BloodInventoryRepository;
 import edu.icet.crm.repository.BloodRequestRepository;
 import edu.icet.crm.repository.HospitalRepository;
 import edu.icet.crm.service.BloodRequestService;
@@ -21,6 +19,7 @@ import java.util.List;
 public class BloodRequestServiceImpl implements BloodRequestService {
     private final BloodRequestRepository bloodRequestRepository;
     private final HospitalRepository hospitalRepository;
+    private final BloodInventoryRepository inventoryRepository;
 
     @Override
     public boolean addBloodRequest(BloodRequest bloodRequest) {
@@ -44,6 +43,42 @@ public class BloodRequestServiceImpl implements BloodRequestService {
         });
         return bloodRequests;
     }
+
+    @Override
+    public List<BloodRequest> getCompletedList() {
+        List<BloodRequestEntity> appointmentEntities = bloodRequestRepository.findByStatus("COMPLETED");
+        List<BloodRequest> bloodRequests = new ArrayList<>();
+        appointmentEntities.forEach(obj->{
+            bloodRequests.add(new ModelMapper().map(obj,BloodRequest.class));
+        });
+        return bloodRequests;
+    }
+
+    @Override
+    public boolean updateRequestStatus(String requestID, String status) {
+        BloodRequestEntity byRequestID = bloodRequestRepository.findByRequestID(requestID);
+
+        if (byRequestID != null) {
+            byRequestID.setStatus(status);
+            bloodRequestRepository.save(byRequestID);
+
+            if ("COMPLETED".equals(status)) {
+                String bloodType = byRequestID.getBloodType();
+                BloodInventoryEntity byBloodType = inventoryRepository.findByBloodType(bloodType);
+
+                if (byBloodType != null) {
+                    byBloodType.setAmount(byBloodType.getAmount() + byRequestID.getAmount());
+                    inventoryRepository.save(byBloodType);
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+
 
     private int getNextSequenceNumber() {
         return (int)bloodRequestRepository.count() + 1;
